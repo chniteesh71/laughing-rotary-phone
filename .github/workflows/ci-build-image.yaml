@@ -51,7 +51,7 @@ jobs:
      runs-on: ubuntu-latest
      env:
         DOCKER_REGISTRY: docker.io
-        APP_NAME: Python-sample-app
+        APP_NAME: python-sample-app
      steps:
         - name: checkout the code
           uses: actions/checkout@v5
