@@ -1,0 +1,33 @@
+# Virtual environments
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+
+# Logs / temp
+*.log
+*.tmp
+*.swp
+
+# Python package cache
+__pypackages__/
+
+# Streamlit
+.streamlit/
+
+# Tests / coverage
+htmlcov/
+.coverage
+.pytest_cache/
+
+# Docker / env files
+*.env
