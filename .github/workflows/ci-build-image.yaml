@@ -5,41 +5,47 @@ on:
         - main
    workflow_dispatch:
 jobs:
-   job1-testing:
-     runs-on: ubuntu-latest
-     steps:
-       - name: checkout the code
-         uses: actions/checkout@v5
-       - name: setup the Python environment
-         uses: actions/setup-python@v6
-         with:
-           python-version: '3.13'
-       - name: Create virtual environment
-         run: python -m venv .venv
-         working-directory: ./src
-       - name: Cache Python dependencies
-         id: cache-deps
-         uses: actions/cache@v4
-         with:
-          path: |
-            ~/.cache/pip
+  job1-testing:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      # Step 1: Create venv BEFORE caching
+      - name: Create virtual environment
+        run: python -m venv ./src/.venv
+
+      # Step 2: Cache the venv
+      - name: Cache Python dependencies
+        id: cache-deps
+        uses: actions/cache@v4
+        with:
+          path:  |
             ./src/.venv
+            ~/.cache/pip
           key: ${{ runner.os }}-python-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-python-
 
-       - name: Install dependencies
-         if: steps.cache-deps.outputs.cache-hit != 'true'
-         run:  |
-          pip install --upgrade pip
-          pip install -r requirements.txt
-         working-directory: ./src
-       - name: Linting...
-         run: ./src/.venv/bin/python run.py lint
-         working-directory: ./src
-       - name: Run the tests
-         run:  ./src/.venv/bin/python -m pytest -v 
-         working-directory: ./src
+      # Step 3: Install dependencies ONLY if cache missed
+      - name: Install dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+        run: |
+          ./src/.venv/bin/pip install --upgrade pip
+          ./src/.venv/bin/pip install -r ./src/requirements.txt
+
+      # Step 4: Lint
+      - name: Lint
+        run: ./src/.venv/bin/python ./src/run.py lint
+
+      # Step 5: Run tests
+      - name: Test
+        run: ./src/.venv/bin/python -m pytest -v ./src/tests
 
    
 
