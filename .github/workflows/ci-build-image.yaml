@@ -28,6 +28,8 @@ jobs:
        - name: Install dependencies
          if: steps.cache-deps.outputs.cache-hit != 'true'
          run:  |
+          python -m venv .venv
+          source .venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
          working-directory: ./src
@@ -35,7 +37,9 @@ jobs:
          run: python run.py lint
          working-directory: ./src
        - name: Run the tests
-         run: pytest -v
+         run:  |
+          source .venv/bin/activate
+          pytest -v
          working-directory: ./src
 
    
