@@ -14,14 +14,16 @@ jobs:
          uses: actions/setup-python@v6
          with:
            python-version: '3.13'
-           
+       - name: Create virtual environment
+         run: python -m venv .venv
+         working-directory: ./src
        - name: Cache Python dependencies
          id: cache-deps
          uses: actions/cache@v4
          with:
           path: |
             ~/.cache/pip
-            .venv
+            ./src/.venv
           key: ${{ runner.os }}-python-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-python-
@@ -29,16 +31,14 @@ jobs:
        - name: Install dependencies
          if: steps.cache-deps.outputs.cache-hit != 'true'
          run:  |
-          python -m venv .venv
-          source .venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
          working-directory: ./src
        - name: Linting...
-         run: python run.py lint
+         run: ./src/.venv/bin/python run.py lint
          working-directory: ./src
        - name: Run the tests
-         run:  python -m pytest -v
+         run:  ./src/.venv/bin/python -m pytest -v 
          working-directory: ./src
 
    
