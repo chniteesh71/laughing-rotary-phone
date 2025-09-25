@@ -37,7 +37,7 @@ jobs:
          run: python run.py lint
          working-directory: ./src
        - name: Run the tests
-         run:  pytest -v
+         run:  .venv/bin/python -m pytest -v
          working-directory: ./src
 
    
