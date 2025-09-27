@@ -23,16 +23,18 @@ pipeline {
         stage('Setup Python & Virtual Environment') {
           steps {
             script {
-               // Use existing Python version
-               sh """
-               python3 --version
-               if [ ! -d ${VENV_PATH} ]; then
+                sh """
+                python3 --version
+                sudo apt-get update
+                sudo apt-get install -y python3.11-venv
+                if [ ! -d ${VENV_PATH} ]; then
                    python3 -m venv ${VENV_PATH}
-               fi
-               """
+                fi
+                """
             }
           }
         }
+
 
 
         stage('Install Dependencies') {
