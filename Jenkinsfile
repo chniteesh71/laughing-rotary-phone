@@ -26,6 +26,7 @@ pipeline {
             script {
                 sh """
                 python3 --version
+                apt install python3.11-venv
                 if [ ! -d ${VENV_PATH} ]; then
                    python3 -m venv ${VENV_PATH}
                 fi
