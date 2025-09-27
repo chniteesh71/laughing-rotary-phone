@@ -15,20 +15,19 @@ pipeline {
         }
 
         stage('Setup Python & Virtual Environment') {
-            steps {
-                script {
-                    // Install Python 3.13 if not already installed, assuming it's available
-                    sh 'python3 --version || sudo apt-get update && sudo apt-get install -y python3.13 python3.13-venv python3.13-dev'
-                    
-                    // Create venv if not exists
-                    sh """
-                    if [ ! -d ${VENV_PATH} ]; then
-                        python3 -m venv ${VENV_PATH}
-                    fi
-                    """
-                }
+          steps {
+            script {
+               // Use existing Python version
+               sh """
+               python3 --version
+               if [ ! -d ${VENV_PATH} ]; then
+                   python3 -m venv ${VENV_PATH}
+               fi
+               """
             }
+          }
         }
+
 
         stage('Install Dependencies') {
             steps {
