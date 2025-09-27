@@ -62,21 +62,24 @@ pipeline {
         }
 
         stage('Docker Build & Push') {
-            environment {
-                DOCKER_USERNAME = credentials('dockerhub-creds') // Make sure you added Docker creds in Jenkins
-            }
-            steps {
-                script {
-                    sh "docker --version"
-                    sh """
-                    echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-                    docker build -t $DOCKER_REGISTRY/$DOCKER_USERNAME/$APP_NAME:latest .
-                    docker tag $DOCKER_REGISTRY/$DOCKER_USERNAME/$APP_NAME:latest $DOCKER_REGISTRY/$DOCKER_USERNAME/$APP_NAME:${GIT_COMMIT}
-                    docker push $DOCKER_REGISTRY/$DOCKER_USERNAME/$APP_NAME:latest
-                    docker push $DOCKER_REGISTRY/$DOCKER_USERNAME/$APP_NAME:${GIT_COMMIT}
-                    """
+          steps {
+            script {
+               def commitSha = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+               withCredentials([usernamePassword(
+                   credentialsId: 'dockerhub-creds',
+                   usernameVariable: 'DOCKER_USERNAME',
+                   passwordVariable: 'DOCKER_PASSWORD'
+               )]) {
+                   sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                   sh """
+                     docker build -t $DOCKER_REGISTRY/$DOCKER_USERNAME/$APP_NAME:latest .
+                     docker tag $DOCKER_REGISTRY/$DOCKER_USERNAME/$APP_NAME:latest $DOCKER_REGISTRY/$DOCKER_USERNAME/$APP_NAME:${commitSha}
+                     docker push $DOCKER_REGISTRY/$DOCKER_USERNAME/$APP_NAME:latest
+                     docker push $DOCKER_REGISTRY/$DOCKER_USERNAME/$APP_NAME:${commitSha}
+                   """
                 }
             }
+           }
         }
     }
 
