@@ -1,5 +1,8 @@
 pipeline {
-    agent any
+    agent {
+      docker { image 'python:3.11-slim' }
+    }
+
 
     environment {
         DOCKER_REGISTRY = "docker.io"
@@ -25,8 +28,6 @@ pipeline {
             script {
                 sh """
                 python3 --version
-                sudo apt-get update
-                sudo apt-get install -y python3.11-venv
                 if [ ! -d ${VENV_PATH} ]; then
                    python3 -m venv ${VENV_PATH}
                 fi
