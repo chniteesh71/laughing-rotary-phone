@@ -5,23 +5,18 @@ env:
     APP_NAME: "python-sample-app"
 
 phases:
-  install:
-    commands:
-      - apt-get update
-      - apt-get install -y docker.io unzip curl
-      - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-      - unzip awscliv2.zip
-      - ./aws/install
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | \
         docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+
   build:
     commands:
       - docker build -t $APP_NAME .
       - docker tag $APP_NAME:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:latest
       - docker tag $APP_NAME:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
+
   post_build:
     commands:
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$APP_NAME:latest
