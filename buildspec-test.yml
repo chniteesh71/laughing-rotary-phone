@@ -6,7 +6,7 @@ phases:
       python: 3.13
     commands:
       - python -m venv src/.venv
-      - source src/.venv/bin/activate
+      - . src/.venv/bin/activate
       - pip install --upgrade pip
       - pip install -r src/requirements.txt
   build:
