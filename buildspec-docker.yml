@@ -7,6 +7,13 @@ env:
 phases:
   install:
     commands:
+      # Start the Docker daemon
+      - echo "Starting Docker daemon..."
+      - nohup /usr/local/bin/dockerd --host=unix:///var/run/docker.sock --host=tcp://127.0.0.1:2375 --storage-driver=overlay2 &
+      # Wait for the Docker daemon to be fully ready
+      - timeout 15 sh -c "until docker info; do echo .; sleep 1; done"
+      - echo "Checking AWS CLI version..."
+      - aws --version
       # Manually install AWS CLI v2 (optional if your image already has it)
       - echo "Checking AWS CLI version..."
       - aws --version
