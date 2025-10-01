@@ -1,21 +1,23 @@
-# Use Python base image
+# Stage 1: Builder
+FROM python:3.11-slim AS builder
+
+WORKDIR /app
+COPY src/requirements.txt .
+
+RUN apt-get update && apt-get install -y build-essential \
+    && pip install --no-cache-dir -r requirements.txt \
+    && apt-get purge -y build-essential \
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/*
+
+# Stage 2: Runtime
 FROM python:3.11-slim
 
-# Set work directory
 WORKDIR /app
-
-# Copy project files
-COPY src/requirements.txt .
 COPY src/dashboard.py .
+COPY --from=builder /usr/local /usr/local
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
-
-# Expose Streamlit default port
 EXPOSE 8501
-
-# Set environment to avoid prompts
 ENV PYTHONUNBUFFERED=1
 
-# Run Streamlit
 CMD ["streamlit", "run", "dashboard.py", "--server.port=8501", "--server.address=0.0.0.0"]
